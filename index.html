@@ -1,0 +1,626 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signal App</title>
+<script src="https://s3.tradingview.com/tv.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  font-family:'Montserrat', sans-serif;
+  background:url('background.jpg') no-repeat center center fixed;
+  background-size:cover;
+  color:#e8eef6;
+}
+
+.container{
+  padding:16px;
+  max-width:420px;
+  margin:auto;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+/* TOP */
+.status{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding: 10px 16px;
+  background:#0f1a2a;
+  border-radius:16px;
+  border:1px solid #1f2c45;
+  font-size: 14px;
+}
+
+/* VIP */
+.vip{
+  background: #11146f78;
+  color: #f2dada;
+  padding:6px 14px;
+  border-radius:14px;
+  font-weight:600;
+}
+
+/* CONNECTED + PULSE */
+.connected{
+  color:#2fd84a;
+  font-weight:600;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.pulse{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#16c47f;
+  animation:pulse 1.6s ease-out infinite;
+}
+
+@keyframes pulse{
+  0%{transform:scale(0.6);opacity:0.9}
+  80%{transform:scale(1.9);opacity:0}
+  100%{opacity:0}
+}
+
+/* CARD */
+.card{
+  background: #141414ab;
+  border-radius: 16px;
+  border: 1px solid #7b6941;
+  padding: 16px;
+}
+
+.main-btn{
+  width:100%;
+  height:56px;
+  border:none;
+  border-radius:16px;
+  background: linear-gradient(#ae7d16, #593a0b);
+  color:white;
+  font-size:18px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+/* TRADES */
+.trade-row{
+  display:flex;
+  justify-content:space-between;
+  padding:10px;
+  border-bottom:1px dashed rgba(255,255,255,.06);
+  opacity:0;
+  transform:translateY(-20px);
+  transition:.5s;
+    font-size: 14px;
+}
+.trade-row.show{opacity:1;transform:translateY(0);font-size: 14px;}
+.green{color:#22c55e;font-weight:700;}
+.red{color:#ff5c5c;font-weight:700;}
+
+/* OVERLAY */
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.8);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
+}
+.loader{
+  border:4px solid #eee;
+  border-top:4px solid #3b6ef5;
+  border-radius:50%;
+  width:50px;
+  height:50px;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* CHART */
+.chart-wrapper{
+  border-radius:2px;
+  overflow:hidden;
+}
+.chart-box{
+  width:100%;
+  aspect-ratio:1/1;
+}
+
+/* SIGNAL */
+.signal-box{
+  height:56px;
+  border-radius:4px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-top:12px;
+  opacity:0;
+  transform:translateY(-20px);
+  transition:.5s;
+  font-size:20px;
+  font-weight:700;
+}
+.signal-box.show{opacity:1;transform:translateY(0);}
+
+.pair-box{
+      background: linear-gradient(#312c1e, #262215);
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 6px 0 rgb(39 24 0 / 25%);
+    transition: .1s;
+}
+.pair-box.active{
+  transform:translateY(3px);
+  box-shadow:0 2px 0 rgba(0,0,0,0.25);
+}
+
+.time-box{    background: #232015cf;
+    color: #c4bd4f;}
+.buy-box{  background: #104927;
+    border: 1px solid #3cc91b99;
+    color: #3cc91b;}
+.sell-box{ background: #441316;
+    border: 1px solid #d021218a;
+    color: #d02121;}
+
+/* TIMER */
+.timer-wrap{
+  margin-top:12px;
+  text-align:center;
+}
+.bar{
+  height: 10px;
+  background: #222;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #7b6941;
+}
+.progress{
+  height:100%;
+  background: #b29130;
+  width:100%;
+}
+.timer-text{
+  margin-top: 6px;
+  font-size: 14px;
+  opacity: .8;
+  color: #b29231;
+}
+
+.back-btn{
+  width: 100%;
+  height: 52px;
+  margin-top: 14px;
+  border: none;
+  border-radius: 74px;
+  background: #272727;
+  font-size: 16px;
+  color: white;
+}
+
+/* FOOTER */
+.footer{
+  text-align:center;
+  font-size:12px;
+  opacity:.5;
+  padding:10px 0;
+}
+
+.hidden{display:none;}
+    
+    .desc {
+    background: linear-gradient(#1c1a12, #14120c);
+    border: 1px solid #7b6941;
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 14px;
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #d6cfa3;
+}
+
+/* ---------- new overlay styles (added) ---------- */
+.post-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  flex-direction: column;
+  transition: opacity 0.5s;
+}
+.post-overlay.hidden { display: none; }  /* ensure hidden works */
+
+.post-content {
+  background: #1c1a12;
+  border: 1px solid #7b6941;
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  max-width: 320px;
+  width: 90%;
+}
+
+.btn-row {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.profit-btn {
+  padding: 12px 32px;
+  border: none;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  color: white;
+  transition: transform 0.1s;
+}
+.profit-btn:active {
+  transform: scale(0.97);
+}
+
+.yes-btn {
+  background: #22c55e;
+}
+
+.no-btn {
+  background: #ef4444;
+}
+
+/* snowflake animation */
+.snowflake {
+  position: fixed;
+  top: -10px;
+  z-index: 2000;
+  pointer-events: none;
+  animation: fall linear forwards;
+  color: white;
+  font-size: 1.2em;
+  user-select: none;
+}
+
+@keyframes fall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(360deg); opacity: 0.3; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="status">
+  <div class="vip">Casper Trading</div>
+  <div class="connected">
+    <div class="pulse"></div>
+    Connected
+  </div>
+</div>
+
+<div id="startBlock" class="card">
+    <div class="desc">
+    This program is designed to analyze the market during trading sessions.<br>
+    Always follow proper risk management and money management.<br>
+    Press the button below to get your signal.
+  </div>
+  <button class="main-btn" onclick="startSignal()">GET SIGNAL</button>
+</div>
+
+<div id="signalBlock" class="card hidden">
+  <div class="chart-wrapper">
+    <div id="chart" class="chart-box"></div>
+  </div>
+
+  <div id="pairBox" class="signal-box pair-box"></div>
+  <div id="timeBox" class="signal-box time-box"></div>
+
+  <div id="timer" class="timer-wrap hidden">
+    <div class="bar">
+      <div id="progress" class="progress"></div>
+    </div>
+    <div id="timerText" class="timer-text"></div>
+  </div>
+
+  <div id="resultBox" class="signal-box"></div>
+
+  <button class="back-btn" onclick="resetApp()">Back</button>
+</div>
+
+<div class="card">
+  <div id="tradeList"></div>
+</div>
+
+<div class="footer">
+Copyright © 2026 @mark_tr8 | All Rights Reserved
+</div>
+
+</div>
+
+<div id="overlay" class="overlay hidden">
+  <div class="loader"></div>
+  <p>Analyzing...</p>
+</div>
+
+<!-- ================== NEW: post‑timer overlay ================== -->
+<div id="postTimerOverlay" class="post-overlay hidden">
+  <div id="questionBlock" class="post-content">
+    <div class="desc" style="font-size:18px; margin-bottom:20px;">Did your trade turn a profit?</div>
+    <div class="btn-row">
+      <button id="yesBtn" class="profit-btn yes-btn">Yes</button>
+      <button id="noBtn" class="profit-btn no-btn">No</button>
+    </div>
+  </div>
+  <div id="congratBlock" class="post-content hidden">
+    <div class="desc" style="font-size:20px;">Congratulations!</div>
+  </div>
+  <div id="infoBlock" class="post-content hidden">
+    <div class="desc">
+      Это нормально, по правилам манименеджмента сейчас нужно сделать "перекрытие". Увеличьте суму сделки на х3, установите время экспирации 2 минуты и откройте сделку в том же направлении! Не делайте больше трех перекрытий подряд!
+    </div>
+    <button id="backFromInfoBtn" class="back-btn" style="margin-top:10px;">Back</button>
+  </div>
+</div>
+<!-- ================== end of new overlay ================== -->
+
+<script>
+
+const pairs=[
+
+"EUR/USD","GBP/USD","USD/JPY","USD/CHF","USD/CAD","AUD/USD","NZD/USD",
+"EUR/GBP","EUR/JPY","GBP/JPY","AUD/JPY","CHF/JPY","EUR/AUD","EUR/CAD",
+"EUR/CHF","GBP/AUD","GBP/CAD","GBP/CHF","AUD/CAD","AUD/CHF","CAD/CHF",
+"CAD/JPY","NZD/JPY","AUD/NZD","EUR/NZD","USD/TRY","USD/RUB","USD/MXN",
+"USD/ZAR","USD/SGD","USD/NOK","USD/SEK"];
+
+let timerRAF;
+let endTimestamp = 0;
+let startTimestamp = 0;
+
+// ----- new variables -----
+let snowflakes = [];
+
+/* TRADES */
+function createTrade(){
+  let isWin=Math.random()<0.85;
+
+  let value;
+  if(isWin){
+    value="+"+(Math.random()*79.88+7.12).toFixed(2)+"$";
+  }else{
+    value="-"+[5,10,15][Math.floor(Math.random()*3)]+"$";
+  }
+
+  let div=document.createElement("div");
+  div.className="trade-row";
+  div.innerHTML=`<div>trader id ${Math.floor(Math.random()*9999)}****</div>
+  <div class="${isWin?'green':'red'}">${value}</div>`;
+  return div;
+}
+
+function initTrades(){
+  const list=document.getElementById("tradeList");
+  for(let i=0;i<5;i++){
+    let el=createTrade();
+    list.appendChild(el);
+    setTimeout(()=>el.classList.add("show"),50);
+  }
+  loopTrades();
+}
+
+function loopTrades(){
+  setTimeout(()=>{
+    const list=document.getElementById("tradeList");
+    let el=createTrade();
+    list.prepend(el);
+    setTimeout(()=>el.classList.add("show"),50);
+
+    if(list.children.length>5){
+      list.lastElementChild.remove();
+    }
+
+    loopTrades();
+  },7000+Math.random()*4000);
+}
+
+pairBox.addEventListener("touchstart",()=>pairBox.classList.add("active"));
+pairBox.addEventListener("touchend",()=>pairBox.classList.remove("active"));
+
+async function startSignal(){
+  overlay.classList.remove("hidden");
+  await wait(3000);
+  overlay.classList.add("hidden");
+
+  startBlock.classList.add("hidden");
+  signalBlock.classList.remove("hidden");
+
+  runSignal();
+}
+
+async function runSignal(){
+
+  const pair=pairs[Math.floor(Math.random()*pairs.length)];
+  const minutes=[2,3,4,5][Math.floor(Math.random()*4)];
+
+  const now = new Date();
+  const endTime = new Date(now);
+  endTime.setMinutes(now.getMinutes()+minutes);
+  endTime.setSeconds(0);
+
+  endTimestamp = endTime.getTime();
+  startTimestamp = Date.now();
+
+  new TradingView.widget({
+    container_id:"chart",
+    symbol:pair.replace('/',''),
+    interval:"1",
+    width:"100%",
+    height:"100%",
+    theme:"dark",
+    hide_volume:true
+  });
+
+  await wait(500);
+  pairBox.innerText=pair;
+  pairBox.classList.add("show");
+
+  await wait(1500);
+  timeBox.innerText=endTime.toTimeString().slice(0,5);
+  timeBox.classList.add("show");
+
+  timer.classList.remove("hidden");
+  startSmoothTimer();
+
+  await wait(2000);
+  resultBox.innerText=Math.random()>0.5?"BUY ↑":"SELL ↓";
+  resultBox.className="signal-box show "+(resultBox.innerText.includes("BUY")?"buy-box":"sell-box");
+}
+
+function startSmoothTimer(){
+
+  cancelAnimationFrame(timerRAF);
+
+  const startDiff = Math.floor((endTimestamp - startTimestamp)/1000);
+  let timerExpired = false;   // guard to fire once
+
+  function update(){
+    const now = Date.now();
+    const diff = Math.max(0, (endTimestamp - now)/1000);
+
+    const min=Math.floor(diff/60);
+    const sec=Math.floor(diff%60);
+
+    const totalMin=Math.floor(startDiff/60);
+    const totalSec=startDiff%60;
+
+    timerText.innerText=
+      `${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')} / ${String(totalMin).padStart(2,'0')}:${String(totalSec).padStart(2,'0')}`;
+
+    const percent = diff / startDiff;
+    progress.style.width = (percent*100)+"%";
+
+    if(diff>0){
+      timerRAF=requestAnimationFrame(update);
+    } else {
+      // timer reached zero
+      progress.style.width = '0%';
+      timerText.innerText = `00:00 / ${String(totalMin).padStart(2,'0')}:${String(totalSec).padStart(2,'0')}`;
+      if(!timerExpired){
+        timerExpired = true;
+        onTimerEnd();
+      }
+    }
+  }
+
+  update();
+}
+
+function onTimerEnd() {
+  // wait 2 seconds then show the profit question overlay
+  setTimeout(() => {
+    document.getElementById('postTimerOverlay').classList.remove('hidden');
+  }, 2000);
+}
+
+pairBox.onclick=()=>{
+  navigator.clipboard.writeText(pairBox.innerText);
+};
+
+function resetApp(){
+  signalBlock.classList.add("hidden");
+  startBlock.classList.remove("hidden");
+  chart.innerHTML="";
+  cancelAnimationFrame(timerRAF);
+
+  pairBox.className="signal-box pair-box";
+  timeBox.className="signal-box time-box";
+  resultBox.className="signal-box";
+  timer.classList.add("hidden");
+}
+
+function wait(ms){return new Promise(r=>setTimeout(r,ms));}
+
+// ---------------- new snow / overlay logic ----------------
+
+function startSnowfall() {
+  const container = document.body;
+  for (let i = 0; i < 50; i++) {
+    let flake = document.createElement('div');
+    flake.className = 'snowflake';
+    flake.innerHTML = '❄';
+    flake.style.left = Math.random() * 100 + '%';
+    flake.style.animationDuration = (Math.random() * 3 + 3) + 's';
+    flake.style.animationDelay = Math.random() * 2 + 's';
+    flake.style.fontSize = (Math.random() * 1.5 + 0.8) + 'em';
+    container.appendChild(flake);
+    snowflakes.push(flake);
+  }
+}
+
+function stopSnowfall() {
+  snowflakes.forEach(flake => flake.remove());
+  snowflakes = [];
+}
+
+function hidePostOverlayAndReset() {
+  const overlay = document.getElementById('postTimerOverlay');
+  overlay.classList.add('hidden');
+  // reset sub‑blocks for next time
+  document.getElementById('questionBlock').classList.remove('hidden');
+  document.getElementById('congratBlock').classList.add('hidden');
+  document.getElementById('infoBlock').classList.add('hidden');
+  stopSnowfall();
+  resetApp();
+}
+
+// yes button
+document.getElementById('yesBtn').addEventListener('click', () => {
+  document.getElementById('questionBlock').classList.add('hidden');
+  document.getElementById('congratBlock').classList.remove('hidden');
+  startSnowfall();
+
+  setTimeout(() => {
+    stopSnowfall();
+    const overlay = document.getElementById('postTimerOverlay');
+    overlay.style.opacity = '0';
+    overlay.addEventListener('transitionend', function handler() {
+      hidePostOverlayAndReset();
+      overlay.style.opacity = '1';   // restore for next time
+      overlay.removeEventListener('transitionend', handler);
+    });
+  }, 4000);
+});
+
+// no button
+document.getElementById('noBtn').addEventListener('click', () => {
+  document.getElementById('questionBlock').classList.add('hidden');
+  document.getElementById('infoBlock').classList.remove('hidden');
+});
+
+// back button inside info block
+document.getElementById('backFromInfoBtn').addEventListener('click', () => {
+  hidePostOverlayAndReset();
+});
+
+initTrades();
+
+</script>
+
+</body>
+</html>
