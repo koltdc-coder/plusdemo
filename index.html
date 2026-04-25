@@ -386,13 +386,15 @@ Do not open more than three overlapping trades in a row!
 
 <script>
 
-const pairs=[
 
-"EUR/USD","GBP/USD","USD/JPY","USD/CHF","USD/CAD","AUD/USD","NZD/USD",
-"EUR/GBP","EUR/JPY","GBP/JPY","AUD/JPY","CHF/JPY","EUR/AUD","EUR/CAD",
-"EUR/CHF","GBP/AUD","GBP/CAD","GBP/CHF","AUD/CAD","AUD/CHF","CAD/CHF",
-"CAD/JPY","NZD/JPY","AUD/NZD","EUR/NZD","USD/TRY","USD/RUB","USD/MXN",
-"USD/ZAR","USD/SGD","USD/NOK","USD/SEK"];
+
+const pairs = [
+  "EUR/JPY", "GBP/JPY", "AUD/CAD", "AUD/CHF", "AUD/JPY",
+  "AUD/USD", "CAD/JPY", "CHF/JPY", "EUR/AUD", "EUR/CAD",
+  "EUR/GBP", "EUR/USD", "GBP/CAD", "GBP/CHF", "USD/CAD",
+  "USD/CHF", "USD/JPY", "GBP/USD", "GBP/AUD", "EUR/CHF",
+  "CAD/CHF"
+];
 
 let timerRAF;
 let endTimestamp = 0;
@@ -403,7 +405,7 @@ let snowflakes = [];
 
 /* TRADES */
 function createTrade(){
-  let isWin=Math.random()<0.85;
+  let isWin=Math.random()<0.9;
 
   let value;
   if(isWin){
