@@ -231,12 +231,15 @@ body{
     color: #d6cfa3;
 }
 
-/* стиль для изображения внутри desc-блока */
-.desc img {
+/* ---------- стили для блока с гифкой (только этот блок) ---------- */
+.gif-block {
+  padding: 0;                  /* убираем отступы, гифка вплотную к бортикам */
+}
+.gif-block img {
   display: block;
-  margin: 0 auto;
-  max-width: 346px;
+  width: 100%;
   height: auto;
+  border-radius: 12px;         /* скругление самой гифки */
 }
 
 /* ---------- new overlay styles (added) ---------- */
@@ -324,11 +327,11 @@ body{
 </div>
 
 <div id="startBlock" class="card">
-    <!-- новый блок с гифкой -->
-    <div class="desc" style="padding: 8px;">
+    <!-- Блок с гифкой (стиль как у desc, но без внутренних отступов) -->
+    <div class="desc gif-block">
         <img src="load.GIF" alt="Loading...">
     </div>
-    <!-- оригинальный текст -->
+    <!-- Оригинальный текст -->
     <div class="desc">
     This program is designed to analyze the market during trading sessions.<br>
     Always follow proper risk management and money management.<br>
