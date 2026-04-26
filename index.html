@@ -116,15 +116,14 @@ body{
   justify-content:center;
   z-index:999;
 }
-
-/* новый стиль для гифки загрузки */
-.loader-gif {
-  width: 600px;          /* можешь подогнать под размер своей гифки */
-  height: 600px;
-  margin-bottom: 16px;
-  object-fit: contain;
+.loader{
+  border:4px solid #eee;
+  border-top:4px solid #3b6ef5;
+  border-radius:50%;
+  width:50px;
+  height:50px;
+  animation:spin 1s linear infinite;
 }
-
 @keyframes spin{to{transform:rotate(360deg);}}
 
 /* CHART */
@@ -232,6 +231,14 @@ body{
     color: #d6cfa3;
 }
 
+/* стиль для изображения внутри desc-блока */
+.desc img {
+  display: block;
+  margin: 0 auto;
+  max-width: 346px;
+  height: auto;
+}
+
 /* ---------- new overlay styles (added) ---------- */
 .post-overlay {
   position: fixed;
@@ -317,6 +324,11 @@ body{
 </div>
 
 <div id="startBlock" class="card">
+    <!-- новый блок с гифкой -->
+    <div class="desc" style="padding: 8px;">
+        <img src="load.GIF" alt="Loading...">
+    </div>
+    <!-- оригинальный текст -->
     <div class="desc">
     This program is designed to analyze the market during trading sessions.<br>
     Always follow proper risk management and money management.<br>
@@ -356,8 +368,7 @@ Copyright © 2026 @mark_tr8 | All Rights Reserved
 </div>
 
 <div id="overlay" class="overlay hidden">
-  <!-- Заменён стандартный loader на гифку -->
-  <img src="load.GIF" alt="Loading..." class="loader-gif">
+  <div class="loader"></div>
   <p>Analyzing...</p>
 </div>
 
